@@ -144,8 +144,46 @@ Table Tags {
 
 // ------------------ Contacts
 Table contacts {
-  Name text [pk]
+  Name text [pk] [
+    note: 'Full Name so we do not have to concatenate via formulas for display']
+  FirstName text
+  LastName text [
+    note: 'Exists so we can sort on Last Name']
+  Email email [
+    note: 'May be necessary for additional email fields.']
+  Phone phone [
+    note: 'May be necessary for additional phone fields.']
+  Street text
+  City text
+  State text
+  Zip text
+  Country select 
+  Source select
   
+  // ===== CRM & Relationships =====
+  Artworks relationship [
+    ref: < Artworks.Name, 
+    note: 'Artworks this person owns.']
+  Organizations relationship [
+    ref: > Organizations.Name, 
+    note: 'Optional. Where this person works.']
+  Tasks relationship [
+    ref: > Tasks.Name, 
+    note: 'Optional tasks associated with this person.']
+  Deals relationship [
+    ref: > Deals.Name, 
+    note: 'Deals this person is related to.']
+  ReferredBy relationship [
+    ref: > Contacts.Name,
+    note: 'Who referred this person to us?']
+  Referrals relationship [
+    ref: > Contacts.Name, 
+    note: 'Who did this person refer to us?']
+  Exhibitions relationship [
+    ref: > Exhibitions.Name, 
+    note: 'Exhibitions & Shows related to this person.']
+
+
   // ===== Created and Modified =====
   Created created_time [default: 'now()']
   CreatedBy created_by [default: 'current user']
