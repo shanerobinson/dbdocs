@@ -67,7 +67,7 @@ Table Artworks {
   Series relationship [
     ref: > Series.Name]
   Tags relationship [
-    ref: > Tags.Name]
+    ref: < Tags.Name]
   Colors multi_select [
     note: 'black, blue, brown, orange, pink, red, white, yellow']
   
@@ -111,6 +111,17 @@ Table Artworks {
 // ------------------ Series
 Table Series {
   Name text [pk]
+  Summary text
+  DateSeriesStared date
+  DateSeriesended date
+
+  // ===== meta data =====
+  SeriesArtist person [
+    note: 'select from Members and Guests']
+  Tags relationship [
+    ref: < Tags.Name]
+  Artworks relationship [
+    ref: < Artworks.Name]
 
   // ===== Created and Modified =====
   Created created_time [default: 'now()']
