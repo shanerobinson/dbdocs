@@ -15,24 +15,9 @@ Project ArtStar_Notion_Framework {
   * column notes = [note:'']
 
   ## Push to dbdocs.io
-  dbdocs build art-star.dbml
+  $ dbdocs build art-star.dbml
   '''
 }
-
-Table format_examples {
-  select_example select [
-    note: '
-    💸 1 = processing, 
-    ✔️ 2 = shipped, 
-    ❌ 3 = cancelled,
-    😔 4 = refunded
-  ']
-  column_note varchar [
-    note: 'this is a note']
-  // this is a comment, not specific to a column
-  // but can be used anywhere as needed
-  Note: 'Examples of Table and Column formatting.'
-} 
 
 // ------------------ Artworks
 Table Artworks {
