@@ -133,6 +133,7 @@ Table Series {
 // ------------------ Tags
 Table Tags {
   Name text [pk]
+  Summary text
   
   // ===== Created and Modified =====
   Created created_time [default: 'now()']
