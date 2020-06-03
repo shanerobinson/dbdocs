@@ -111,21 +111,46 @@ Table Artworks {
 // ------------------ Series
 Table Series {
   Name text [pk]
+
+  // ===== Created and Modified =====
+  Created created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  Modified last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
 }
 
 // ------------------ Tags
 Table Tags {
   Name text [pk]
+  
+  // ===== Created and Modified =====
+  Created created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  Modified last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
 }
 
 // ------------------ Contacts
 Table contacts {
   Name text [pk]
+  
+  // ===== Created and Modified =====
+  Created created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  Modified last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
 }
 
 // ------------------ Organizations
 Table organizations {
   Name text [pk]
+
+  
+  // ===== Created and Modified =====
+  Created created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  Modified last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
 
   Note: 'Galleries, Museums, Non-profits, and all Businesses wanting to be tracked and connected.'
 }
@@ -133,10 +158,22 @@ Table organizations {
 // ------------------ Exhibitions
 Table Exhibitions {
   Name text [pk]
+  
+  // ===== Created and Modified =====
+  Created created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  Modified last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
 }
 
 // ------------------ Deals
 Table Deals {
   Name text [pk]
+  
+  // ===== Created and Modified =====
+  Created created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  Modified last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
 }
 
