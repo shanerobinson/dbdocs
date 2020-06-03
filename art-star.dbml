@@ -149,6 +149,9 @@ Table contacts {
   FirstName text
   LastName text [
     note: 'Exists so we can sort on Last Name']
+  Website url
+  Instagram url
+  LinkedIn url
   Email email [
     note: 'May be necessary for additional email fields.']
   Phone phone [
@@ -158,7 +161,8 @@ Table contacts {
   State text
   Zip text
   Country select 
-  Source select
+  Source select [
+    note: 'Where was this contact made?']
   
   // ===== CRM & Relationships =====
   Artworks relationship [
@@ -168,21 +172,20 @@ Table contacts {
     ref: > Organizations.Name, 
     note: 'Optional. Where this person works.']
   Tasks relationship [
-    ref: > Tasks.Name, 
+    ref: < Tasks.Name, 
     note: 'Optional tasks associated with this person.']
   Deals relationship [
-    ref: > Deals.Name, 
+    ref: < Deals.Name, 
     note: 'Deals this person is related to.']
   ReferredBy relationship [
-    ref: > Contacts.Name,
+    ref: - Contacts.Name,
     note: 'Who referred this person to us?']
   Referrals relationship [
-    ref: > Contacts.Name, 
+    ref: < Contacts.Name, 
     note: 'Who did this person refer to us?']
   Exhibitions relationship [
-    ref: > Exhibitions.Name, 
+    ref: < Exhibitions.Name, 
     note: 'Exhibitions & Shows related to this person.']
-
 
   // ===== Created and Modified =====
   Created created_time [default: 'now()']
@@ -194,6 +197,39 @@ Table contacts {
 // ------------------ Organizations
 Table organizations {
   Name text [pk]
+  ServiceIndustry multi_select
+  Website url
+  Instagram url
+  Email email [
+    note: 'May be necessary for additional email fields.']
+  Phone phone [
+    note: 'May be necessary for additional phone fields.']
+  Street text
+  City text
+  State text
+  Zip text
+  Country select 
+
+  // ===== CRM & Relationships =====
+  Artworks relationship [
+    ref: < Artworks.Name, 
+    note: 'Artworks related to this Org.']
+  Staff relationship [
+    ref: < Contacts.Name, 
+    note: 'People related to this Org.']
+  Tags relationship [
+    ref: < Tags.Name]
+  Tasks relationship [
+    ref: < Tasks.Name, 
+    note: 'Optional Tasks associated with this Org.']
+  Deals relationship [
+    ref: < Deals.Name, 
+    note: 'Deals this Org is related to.']
+  Exhibitions relationship [
+    ref: < Exhibitions.Name, 
+    note: 'Exhibitions & Shows related to this Org.']
+
+
 
   
   // ===== Created and Modified =====
