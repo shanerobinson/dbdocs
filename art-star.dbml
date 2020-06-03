@@ -35,108 +35,108 @@ Table format_examples {
 } 
 
 // ------------------ Artworks
-Table artworks {
+Table Artworks {
   // ===== general artwork info =====
-  name text [pk]
-  images file_media [
+  Name text [pk]
+  Images file_media [
     note: 'multi-file upload, for use in Rollups']
-  year_made text 
-  media multi_select [
+  YearMade text 
+  Media multi_select [
     note: 'acrylic, cold wax, encaustic, photograph, ink, oil, wax']
-  substrate select [
+  Substrate select [
     note: 'on canvas, on canvas sheet, on wood panel, on paper']
-  height number [
+  Height number [
     note: 'integer in inches. cm will be auto-calculated']
-  width number [
+  Width number [
     note: 'integer in inches. cm will be auto-calculated']
-  depth number [
+  Depth number [
     note: 'integer in inches. cm will be auto-calculated']
-  price_calc number [
-    note: 'used in Price formula: height x width x price_calc']
-  auto_price formula [
-    note: 'round(prop("height") * prop("width") * prop("price_calc"))']
-  manual_price number [
-    note: 'Used to override `auto_price` if want to set specific price']
-  override_auto_price checkbox [
-    note: 'check if want `manual_price` to be used in display formulas instead of `auto_price`']
-  display_price formula {
-    note: 'Needed for Rollup sum in Deals: prop("override_auto_price") ? prop("manual_price") : prop("auto_price")'
+  PriceCalc number [
+    note: 'used in Price formula: Height x Width x PriceCalc']
+  AutoPrice formula [
+    note: 'round(prop("Height") * prop("Width") * prop("PriceCalc"))']
+  ManualPrice number [
+    note: 'Used to override `AutoPrice` if want to set specific price']
+  OverrideAutoPrice checkbox [
+    note: 'check if want `ManualPrice` to be used in display formulas instead of `AutoPrice`']
+  DisplayPrice formula {
+    note: 'Needed for Rollup sum in Deals: prop("OverrideAutoPrice") ? prop("ManualPrice") : prop("AutoPrice")'
   }
   
   // ===== meta data =====
-  series relationship [
-    ref: > series.name]
-  tags relationship [
-    ref: > tags.name]
-  colors multi_select [
+  Series relationship [
+    ref: > Series.Name]
+  Tags relationship [
+    ref: > Tags.Name]
+  Colors multi_select [
     note: 'black, blue, brown, orange, pink, red, white, yellow']
   
   // ===== CRM connections =====
-  collectors relationship [
-    ref: > contacts.name]
-  galleries relationship [
-    ref: > organizations.name]
-  exhibitions relationship [
-    ref: - exhibitions.name]
-  deals relationship [
-    ref: - deals.name, note: '']
+  Collectors relationship [
+    ref: > contacts.Name]
+  Galleries relationship [
+    ref: > organizations.Name]
+  Exhibitions relationship [
+    ref: - Exhibitions.Name]
+  Deals relationship [
+    ref: - Deals.Name, note: '']
 
   // ===== Social Media =====
-  include_year checkbox [
-    note: 'used in `artwork_caption` display formula']
-  include_inches checkbox [
-    note: 'used in `artwork_caption` display formula']
-  include_cm checkbox [
-    note: 'used in `artwork_caption` display formula']
-  include_price checkbox [
-    note: 'used in `artwork_caption` display formula']
+  IncludeYear checkbox [
+    note: 'used in `ArtworkCaption` display formula']
+  IncludeInches checkbox [
+    note: 'used in `ArtworkCaption` display formula']
+  IncludeCM checkbox [
+    note: 'used in `ArtworkCaption` display formula']
+  IncludePrice checkbox [
+    note: 'used in `ArtworkCaption` display formula']
 
   // ===== Formulas =====
-  dimensions_in formula [
-    note: 'Creates inches display: if(empty(prop("height")), "", concat(format(prop("height")), " x ", format(prop("width")), if(empty(prop("depth")), "", concat(" x ", format(prop("depth")))), " in"))']
-  dimensions_cm formula [
-    note: 'Creates centimeter display: if(empty(prop("height")), "", concat(format(multiply(2.54, prop("height"))), " x ", format(multiply(2.54, prop("width"))), if(empty(prop("depth")), "", concat(" x ", format(multiply(2.54, prop("depth"))))), " cm"))']
-  artwork_caption formula [
-    note: '''Full caption for display and copy/paste: concat("'" + prop("name") + "'" + if(prop("include_year"), "\\n" + prop("year"), "") + if(empty(prop("media")), "", "\\n" + prop("media")) + " " + prop("substrate") + if(prop("include_inches"), "\\n" + prop("dimensions_in"), "") + if(prop("include_cm"), "\\n" + prop("dimensions_cm"), "") + if(prop("include_price"), prop("override_auto_price") ? ("\\n$" + format(prop("manual_price")) + ".00") : ("\\n" + prop("auto_price")), "") + "\\n")''']
+  DimensionsInches formula [
+    note: 'Creates inches display: if(empty(prop("Height")), "", concat(format(prop("Height")), " x ", format(prop("Width")), if(empty(prop("Depth")), "", concat(" x ", format(prop("Depth")))), " in"))']
+  DimensionsCM formula [
+    note: 'Creates centimeter display: if(empty(prop("Height")), "", concat(format(multiply(2.54, prop("Height"))), " x ", format(multiply(2.54, prop("Width"))), if(empty(prop("Depth")), "", concat(" x ", format(multiply(2.54, prop("Depth"))))), " cm"))']
+  ArtworkCaption formula [
+    note: '''Full caption for display and copy/paste: concat("'" + prop("name") + "'" + if(prop("IncludeYear"), "\\n" + prop("year"), "") + if(empty(prop("media")), "", "\\n" + prop("media")) + " " + prop("Substrate") + if(prop("IncludeInches"), "\\n" + prop("DimensionsInches"), "") + if(prop("IncludeCM"), "\\n" + prop("DimensionsCM"), "") + if(prop("IncludePrice"), prop("OverrideAutoPrice") ? ("\\n$" + format(prop("ManualPrice")) + ".00") : ("\\n" + prop("AutoPrice")), "") + "\\n")''']
 
   // ===== Created and Modified =====
-  created created_time [default: 'now()']
-  created_by created_by [default: 'current user']
-  modified last_edited_time [default: 'now()']
-  modified_by last_edited_by [default: 'current user']
+  Created created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  Modified last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
 
-  Note: 'Artwork images and data for tracking and connecting.'
+  Note: 'Artwork Images and data for tracking and connecting.'
 }
 
 // ------------------ Series
-Table series {
-  name text [pk]
+Table Series {
+  Name text [pk]
 }
 
 // ------------------ Tags
-Table tags {
-  name text [pk]
+Table Tags {
+  Name text [pk]
 }
 
 // ------------------ Contacts
 Table contacts {
-  name text [pk]
+  Name text [pk]
 }
 
 // ------------------ Organizations
 Table organizations {
-  name text [pk]
+  Name text [pk]
 
   Note: 'Galleries, Museums, Non-profits, and all Businesses wanting to be tracked and connected.'
 }
 
 // ------------------ Exhibitions
-Table exhibitions {
-  name text [pk]
+Table Exhibitions {
+  Name text [pk]
 }
 
 // ------------------ Deals
-Table deals {
-  name text [pk]
+Table Deals {
+  Name text [pk]
 }
 
