@@ -38,6 +38,8 @@ Table format_examples {
 Table Artworks {
   // ===== general artwork info =====
   Name text [pk]
+  Artist person [
+    note: 'select from Members and Guests']
   Images file_media [
     note: 'multi-file upload, for use in Rollups']
   YearMade text 
@@ -244,6 +246,28 @@ Table organizations {
 // ------------------ Exhibitions
 Table Exhibitions {
   Name text [pk]
+  Artist person [
+    note: 'select from Members and Guests']
+  Website url
+  Hashtags multi_select
+  ShowDates date [note: 'Range. Include Start and End dates']
+  SubmissionDue date
+
+  // ===== Relationships =====
+  Artworks relationship [
+    ref: < Artworks.Name, 
+    note: 'Artworks related to this Exhibition.']
+  Contact relationship [
+    ref: < Contacts.Name, 
+    note: 'People related to this Exhibition.']
+  Tags relationship [
+    ref: < Tags.Name]
+  Tasks relationship [
+    ref: < Tasks.Name, 
+    note: 'Optional Tasks associated with this Exhibition.']
+  Organizations relationship [
+    ref: < Organizations.Name, 
+    note: 'Where is this Exhibition?']
   
   // ===== Created and Modified =====
   Created created_time [default: 'now()']
@@ -255,6 +279,40 @@ Table Exhibitions {
 // ------------------ Deals
 Table Deals {
   Name text [pk]
+  AssignedTo person [
+    note: 'select from Members and Guests']
+  Stage multi_select
+  Type multi_select
+  Discount number [
+    note: 'Enter integer. Format as %']
+  Tax number [
+    note: 'Enter integer. Format as %. Leave empty if not needed.']
+  CloseDate date
+  WonLostReason text
+
+  // ===== CRM & Relationships =====
+  Artworks relationship [
+    ref: < Artworks.Name, 
+    note: 'Artworks related to this Deal.']
+  ArtworksTotal rollup [
+    note: 'SUM Rollup of Artworks relationship']
+  Contact relationship [
+    ref: < Contacts.Name, 
+    note: 'People related to this Deal.']
+  Tags relationship [
+    ref: < Tags.Name]
+  Tasks relationship [
+    ref: < Tasks.Name, 
+    note: 'Optional Tasks associated with this Deal.']
+  Organizations relationship [
+    ref: < Organizations.Name, 
+    note: 'Org(s) related to this Deal.']
+
+  // ===== Formulas =====
+  DealWDiscount formula [
+    note: 'prop("ArtworksTotal") - prop("ArtworksTotal") * prop("Discount")']
+  DealTotal formula [
+    note: 'Includes tax : prop("DealWDiscount") + prop("DealWDiscount") * prop("Tax")']
   
   // ===== Created and Modified =====
   Created created_time [default: 'now()']
