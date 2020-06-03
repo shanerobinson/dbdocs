@@ -59,9 +59,9 @@ Table Artworks {
     note: 'Used to override `AutoPrice` if want to set specific price']
   OverrideAutoPrice checkbox [
     note: 'check if want `ManualPrice` to be used in display formulas instead of `AutoPrice`']
-  DisplayPrice formula {
+  DisplayPrice formula [
     note: 'Needed for Rollup sum in Deals: prop("OverrideAutoPrice") ? prop("ManualPrice") : prop("AutoPrice")'
-  }
+  ]
   
   // ===== meta data =====
   Series relationship [
