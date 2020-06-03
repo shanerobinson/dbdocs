@@ -1,7 +1,7 @@
 Project ArtStar_Notion_Framework {
   database_type: 'Notion.so'
   Note: '''
-  # ERD for Artist/Gallery System Framework in Notion
+  # ERD for Artist/Gallery Management & CRM System Framework in Notion
 
   DBML docs: https://www.dbml.org/docs/#project-definition
 
