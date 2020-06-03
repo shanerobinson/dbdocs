@@ -75,9 +75,9 @@ Table Artworks {
   
   // ===== CRM connections =====
   Collectors relationship [
-    ref: > contacts.Name]
+    ref: > Contacts.Name]
   Galleries relationship [
-    ref: > organizations.Name]
+    ref: > Organizations.Name]
   Exhibitions relationship [
     ref: - Exhibitions.Name]
   Deals relationship [
@@ -132,6 +132,29 @@ Table Series {
   ModifiedBy last_edited_by [default: 'current user']
 }
 
+// ------------------ Tasks
+Table Tasks {
+  Name text [pk]
+  AssignedTo person [
+    note: 'select from Members and Guests']
+  DueDate date
+  TickleDate date
+  CompletedDate date
+  CompletedBy person [
+    note: 'select from Members and Guests']
+  Status select
+  Context select
+  Priority select
+  IfWaitingWhy text
+  TimeRequired number
+  
+  // ===== Created and Modified =====
+  Created created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  Modified last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
+}
+
 // ------------------ Tags
 Table Tags {
   Name text [pk]
@@ -145,8 +168,8 @@ Table Tags {
 }
 
 // ------------------ Contacts
-Table contacts {
-  Name text [pk] [
+Table Contacts {
+  Name text [pk, 
     note: 'Full Name so we do not have to concatenate via formulas for display']
   FirstName text
   LastName text [
@@ -197,7 +220,7 @@ Table contacts {
 }
 
 // ------------------ Organizations
-Table organizations {
+Table Organizations {
   Name text [pk]
   ServiceIndustry multi_select
   Website url
