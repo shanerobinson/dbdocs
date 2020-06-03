@@ -1,0 +1,118 @@
+Project ArtStar_Notion_Framework {
+  database_type: 'Notion.so'
+  Note: '''
+  # ERD for Artist/Gallery System Framework in Notion
+
+  DBML docs: https://www.dbml.org/docs/#project-definition
+
+  All tables will be pre-pended in Notion with either "ArtStar::" or "AS::" in order to facilitate easy selection in Relationships.
+
+  __Formmating Notes__
+
+  * relationship __one-to-many__ current table w/ table2.column = [ref: < table2.column]
+  * relationship __many-to-one__ current table w/ table2.column = [ref: > table2.column]
+  * relationship __one-to-one or many-to-many__ current table w/ table2.column = [ref: - table2.column]
+  * column notes = [note:'']
+
+  ## Push to dbdocs.io
+  dbdocs build art-star.dbml
+  '''
+}
+
+Table format_examples {
+  select_example select [
+    note: '
+    💸 1 = processing, 
+    ✔️ 2 = shipped, 
+    ❌ 3 = cancelled,
+    😔 4 = refunded
+  ']
+  column_note varchar [note: 'this is a note']
+  // this is a comment, not specific to a column
+  // but can be used anywhere as needed
+  Note: 'Examples of Table and Column formatting.'
+} 
+
+// ------------------ Artworks
+Table artworks {
+  // ===== general artwork info =====
+  name text [pk]
+  images file_media [note: 'multi-file upload, for use in Rollups']
+  year_made text 
+  media multi_select [
+    note: 'acrylic, cold wax, encaustic, photograph, ink, oil, wax']
+  substrate select [
+    note: 'on canvas, on canvas sheet, on wood panel, on paper']
+  height number [note: 'integer in inches. cm will be auto-calculated']
+  width number [note: 'integer in inches. cm will be auto-calculated']
+  depth number [note: 'integer in inches. cm will be auto-calculated']
+  price_calc number [note: 'used in Price formula: height x width x price_calc']
+  auto_price formula [
+    note: '"$" + format(round(prop("height") * prop("width") * prop("price_calc"))) + ".00"']
+  manual_price number [note: 'Used to override `auto_price` if want to set specific price']
+  override_auto_price checkbox [note: 'check if want `manual_price` to be used in display formulas instead of `auto_price`']
+  
+  // ===== meta data =====
+  series relationship [ref: > series.name]
+  tags relationship [ref: > tags.name]
+  colors multi_select [note: 'black, blue, brown, orange, pink, red, white, yellow']
+  
+  // ===== CRM connections =====
+  collectors relationship [ref: > contacts.name]
+  galleries relationship [ref: > organizations.name]
+  exhibitions relationship [ref: - exhibitions.name]
+  deals relationship [ref: - deals.name, note: '']
+
+  // ===== Social Media =====
+  include_year checkbox [note: 'used in `artwork_caption` display formula']
+  include_inches checkbox [note: 'used in `artwork_caption` display formula']
+  include_cm checkbox [note: 'used in `artwork_caption` display formula']
+  include_price checkbox [note: 'used in `artwork_caption` display formula']
+
+  // ===== Formulas =====
+  dimensions_in formula [note: 'Creates inches display: if(empty(prop("height")), "", concat(format(prop("height")), " x ", format(prop("width")), if(empty(prop("depth")), "", concat(" x ", format(prop("depth")))), " in"))']
+  dimensions_cm formula [note: 'Creates centimeter display: if(empty(prop("height")), "", concat(format(multiply(2.54, prop("height"))), " x ", format(multiply(2.54, prop("width"))), if(empty(prop("depth")), "", concat(" x ", format(multiply(2.54, prop("depth"))))), " cm"))']
+  artwork_caption formula [note: '''Full caption for display and copy/paste: concat("'" + prop("name") + "'" + if(prop("include_year"), "\\n" + prop("year"), "") + if(empty(prop("media")), "", "\\n" + prop("media")) + " " + prop("substrate") + if(prop("include_inches"), "\\n" + prop("dimensions_in"), "") + if(prop("include_cm"), "\\n" + prop("dimensions_cm"), "") + if(prop("include_price"), prop("override_auto_price") ? ("\\n$" + format(prop("manual_price")) + ".00") : ("\\n" + prop("auto_price")), "") + "\\n")''']
+
+
+  // ===== Created and Modified =====
+  created created_time [default: 'now()']
+  created_by created_by [default: 'current user']
+  modified last_edited_time [default: 'now()']
+  modified_by last_edited_by [default: 'current user']
+
+  Note: 'Artwork images and data for tracking and connecting.'
+}
+
+// ------------------ Series
+Table series {
+  name text [pk]
+}
+
+// ------------------ Tags
+Table tags {
+  name text [pk]
+}
+
+// ------------------ Contacts
+Table contacts {
+  name text [pk]
+}
+
+// ------------------ Organizations
+Table organizations {
+  name text [pk]
+
+  Note: 'Galleries, Museums, Non-profits, and all Businesses wanting to be tracked and connected.'
+}
+
+// ------------------ Exhibitions
+Table exhibitions {
+  name text [pk]
+}
+
+// ------------------ Deals
+Table deals {
+  name text [pk]
+}
+
