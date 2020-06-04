@@ -98,13 +98,13 @@ Table Artworks {
 // ------------------ Series
 Table Series {
   Name text [pk]
-  Summary text
-  DateSeriesStared date
-  DateSeriesended date
-
-  // ===== meta data =====
-  SeriesArtist person [
+  Artist person [
     note: 'select from Members and Guests']
+  Summary text
+  DateSeriesStarted date
+  DateSeriesEnded date
+
+  // ===== Related Tables =====
   Tags relationship [
     ref: < Tags.Name]
   Artworks relationship [
