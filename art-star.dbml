@@ -258,7 +258,7 @@ Table Exhibitions {
     note: 'select from Members and Guests']
   Website url
   Hashtags multi_select
-  ShowDates date [note: 'Range. Include Start and End dates']
+  ShowDateRange date [note: 'Range. Include Start and End dates']
   SubmissionDue date
 
   // ===== Relationships =====
