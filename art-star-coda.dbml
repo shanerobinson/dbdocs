@@ -60,11 +60,11 @@ Table Artworks {
   
   // ===== CRM connections =====
   Collectors relationship [
-    ref: > Contacts.Name]
+    ref: > Contacts.FullName]
   Galleries relationship [
     ref: > Organizations.Name]
   Exhibitions relationship [
-    ref: - Exhibitions.Name]
+    ref: - Exhibitions.Exhibition]
   Deals relationship [
     ref: - Deals.Deal, note: '']
 
@@ -167,7 +167,7 @@ Table Tags {
 
 // ------------------ Contacts
 Table Contacts {
-  Name text [pk, 
+  FullName text [pk, 
     note: 'Full Name so we do not have to concatenate via formulas for display']
   FirstName text
   LastName text [
@@ -175,6 +175,7 @@ Table Contacts {
   Website url
   Instagram url
   LinkedIn url
+  Twitter url
   Email email [
     note: 'May be necessary for additional email fields.']
   Phone phone [
@@ -201,13 +202,13 @@ Table Contacts {
     ref: < Deals.Deal, 
     note: 'Deals this person is related to.']
   ReferredBy relationship [
-    ref: - Contacts.Name,
+    ref: - Contacts.FullName,
     note: 'Who referred this person to us?']
   Referrals relationship [
-    ref: < Contacts.Name, 
+    ref: < Contacts.FullName, 
     note: 'Who did this person refer to us?']
   Exhibitions relationship [
-    ref: < Exhibitions.Name, 
+    ref: < Exhibitions.Exhibition, 
     note: 'Exhibitions & Shows related to this person.']
 
   // ===== CreatedOn and Modified =====
@@ -220,7 +221,7 @@ Table Contacts {
 // ------------------ Organizations
 Table Organizations {
   Name text [pk]
-  ServiceIndustry multi_select
+  Industry multi_select
   Website url
   Instagram url
   Email email [
@@ -238,7 +239,7 @@ Table Organizations {
     ref: < Artworks.Title, 
     note: 'Artworks related to this Org.']
   Staff relationship [
-    ref: < Contacts.Name, 
+    ref: < Contacts.FullName, 
     note: 'People related to this Org.']
   Tags relationship [
     ref: < Tags.Tag]
@@ -249,11 +250,8 @@ Table Organizations {
     ref: < Deals.Deal, 
     note: 'Deals this Org is related to.']
   Exhibitions relationship [
-    ref: < Exhibitions.Name, 
+    ref: < Exhibitions.Exhibition, 
     note: 'Exhibitions & Shows related to this Org.']
-
-
-
   
   // ===== CreatedOn and Modified =====
   CreatedOn created_time [default: 'now()']
@@ -266,20 +264,24 @@ Table Organizations {
 
 // ------------------ Exhibitions
 Table Exhibitions {
-  Name text [pk]
+  Exhibition text [pk]
   Artist person [
     note: 'select from Members and Guests']
   Website url
   Hashtags multi_select
-  ShowDateRange date [note: 'Range. Include Start and End dates']
+  ShowDateStart date 
+  ShowDateEnd date 
   SubmissionDue date
+  SubmissionDueIn formula [
+    note: 'Days(thisRow.[Submission Due]-Today())'
+  ]
 
   // ===== Relationships =====
   Artworks relationship [
     ref: < Artworks.Title, 
     note: 'Artworks related to this Exhibition.']
   Contact relationship [
-    ref: < Contacts.Name, 
+    ref: < Contacts.FullName, 
     note: 'People related to this Exhibition.']
   Tags relationship [
     ref: < Tags.Tag]
@@ -302,8 +304,8 @@ Table Deals {
   Deal text [pk]
   AssignedTo person [
     note: 'select from Members and Guests']
-  Stage multi_select
-  Type multi_select
+  Stage select
+  Type select
   Discount number [
     note: 'Enter integer. Format as %']
   Tax number [
@@ -318,7 +320,7 @@ Table Deals {
   ArtworksTotal rollup [
     note: 'SUM Rollup of Artworks relationship']
   Contact relationship [
-    ref: < Contacts.Name, 
+    ref: < Contacts.FullName, 
     note: 'People related to this Deal.']
   Tags relationship [
     ref: < Tags.Tag]
