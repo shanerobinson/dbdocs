@@ -1,0 +1,344 @@
+Project ArtStar_Coda_Framework {
+  database_type: 'Coda.io'
+  Note: '''
+  # ERD for Artist/Gallery Management & CRM System Framework in coda
+
+  DBML docs: https://www.dbml.org/docs/#project-definition
+
+  All tables will be pre-pended in Notion with either "ArtStar::" or "AS::" in order to facilitate easy selection in Relationships.
+
+  __Formmating Notes__
+
+  * relationship __one-to-many__ current table w/ table2.column = [ref: < table2.column]
+  * relationship __many-to-one__ current table w/ table2.column = [ref: > table2.column]
+  * relationship __one-to-one or many-to-many__ current table w/ table2.column = [ref: - table2.column]
+  * column notes = [note:'']
+
+  ## Push to dbdocs.io
+  $ dbdocs build art-star-coda.dbml
+  '''
+}
+
+// ------------------ Artworks
+Table Artworks {
+  // ===== general artwork info =====
+  Title text [pk]
+  Artist person [
+    note: 'select from Members and Guests']
+  Images file_media [
+    note: 'multi-file upload, for use in Rollups']
+  Year text 
+  Media multi_select [
+    note: 'acrylic, cold wax, encaustic, photograph, ink, oil, wax, etc.']
+  Substrate select [
+    note: 'on canvas, on canvas sheet, on wood panel, on paper']
+  Height number [
+    note: 'integer in inches. cm will be auto-calculated']
+  Width number [
+    note: 'integer in inches. cm will be auto-calculated']
+  Depth number [
+    note: 'integer in inches. cm will be auto-calculated']
+  PriceCalc number [
+    note: 'used in Price formula: Height x Width x PriceCalc']
+  AutoPrice formula [
+    note: 'Round(Product(thisRow.Height,thisRow.Width,thisRow.[Price Calc]))']
+  ManualPrice number [
+    note: 'Used to override `AutoPrice` if want to set specific price']
+  OverrideAutoPrice checkbox [
+    note: 'check if want `ManualPrice` to be used in display formulas instead of `AutoPrice`']
+  DisplayPrice formula [
+    note: 'SwitchIf(thisRow.[Override Auto Price],thisRow.[Manual Price],thisRow.[Auto Price])'
+  ]
+  
+  // ===== meta data =====
+  Series relationship [
+    ref: > Series.Series]
+  Tags relationship [
+    ref: < Tags.Tag]
+  Colors multi_select [
+    note: 'black, blue, brown, orange, pink, red, white, yellow']
+  
+  // ===== CRM connections =====
+  Collectors relationship [
+    ref: > Contacts.Name]
+  Galleries relationship [
+    ref: > Organizations.Name]
+  Exhibitions relationship [
+    ref: - Exhibitions.Name]
+  Deals relationship [
+    ref: - Deals.Deal, note: '']
+
+  // ===== Social Media =====
+  IncludeArtist checkbox [
+    note: 'used in `ArtworkCaption` display formula']
+  IncludeYear checkbox [
+    note: 'used in `ArtworkCaption` display formula']
+  IncludeInches checkbox [
+    note: 'used in `ArtworkCaption` display formula']
+  IncludeCM checkbox [
+    note: 'used in `ArtworkCaption` display formula']
+  IncludePrice checkbox [
+    note: 'used in `ArtworkCaption` display formula']
+
+  // ===== Formulas =====
+  f_DimensionsIN formula [
+    note: 'Concatenate(thisRow.Height, " x ",thisRow.Width,If(IsNotBlank(thisRow.Depth)," x "+thisRow.Depth ,"")," in")']
+  f_DimensionsCM formula [
+    note: '
+      Concatenate( 
+        round(Product(thisRow.Height,2.54)), 
+        " x ", 
+        round(Product(thisRow.Width,2.54)), 
+        If(IsNotBlank(thisRow.Depth), 
+          " x " + 
+          round(Product(thisRow.Depth,2.54)) , 
+          "" 
+        ), 
+        " cm" 
+      )']
+  ArtworkCaption formula [
+    note: '''Full caption for display and copy/paste: concat("'" + prop("name") + "'" + if(prop("IncludeYear"), "\\n" + prop("year"), "") + if(empty(prop("media")), "", "\\n" + prop("media")) + " " + prop("Substrate") + if(prop("IncludeInches"), "\\n" + prop("DimensionsInches"), "") + if(prop("IncludeCM"), "\\n" + prop("DimensionsCM"), "") + if(prop("IncludePrice"), prop("OverrideAutoPrice") ? ("\\n$" + format(prop("ManualPrice")) + ".00") : ("\\n" + prop("AutoPrice")), "") + "\\n")''']
+
+  // ===== CreatedOn and Modified =====
+  CreatedOn created_on [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  ModifiedOn modified_on [default: 'now()']
+  ModifiedBy modified_by [default: 'current user']
+
+  Note: 'Artwork Images and data for tracking and connecting.'
+}
+
+// ------------------ Series
+Table Series {
+  Series text [pk]
+  Artist person [
+    note: 'select from Members and Guests']
+  Summary text
+  DateSeriesStarted date
+  DateSeriesEnded date
+
+  // ===== Related Tables =====
+  Tags relationship [
+    ref: < Tags.Tag]
+  Artworks relationship [
+    ref: < Artworks.Title]
+
+  // ===== CreatedOn and Modified =====
+  CreatedOn created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  ModifiedOn last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
+}
+
+// ------------------ Tasks
+Table Tasks {
+  Task text [pk]
+  AssignedTo person [
+    note: 'select from Members and Guests']
+  DueDate date
+  TickleDate date
+  CompletedDate date
+  CompletedBy person [
+    note: 'select from Members and Guests']
+  Status select
+  Context select
+  Priority select
+  IfWaitingWhy text
+  TimeRequired number
+  
+  // ===== CreatedOn and Modified =====
+  CreatedOn created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  ModifiedOn last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
+}
+
+// ------------------ Tags
+Table Tags {
+  Tag text [pk]
+  Summary text
+  
+  // ===== CreatedOn and Modified =====
+  CreatedOn created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  ModifiedOn last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
+}
+
+// ------------------ Contacts
+Table Contacts {
+  Name text [pk, 
+    note: 'Full Name so we do not have to concatenate via formulas for display']
+  FirstName text
+  LastName text [
+    note: 'Exists so we can sort on Last Name']
+  Website url
+  Instagram url
+  LinkedIn url
+  Email email [
+    note: 'May be necessary for additional email fields.']
+  Phone phone [
+    note: 'May be necessary for additional phone fields.']
+  Street text
+  City text
+  State text
+  Zip text
+  Country select 
+  Source select [
+    note: 'Where was this contact made?']
+  
+  // ===== CRM & Relationships =====
+  Artworks relationship [
+    ref: < Artworks.Title, 
+    note: 'Artworks this person owns.']
+  Organizations relationship [
+    ref: > Organizations.Name, 
+    note: 'Optional. Where this person works.']
+  Tasks relationship [
+    ref: < Tasks.Task, 
+    note: 'Optional tasks associated with this person.']
+  Deals relationship [
+    ref: < Deals.Deal, 
+    note: 'Deals this person is related to.']
+  ReferredBy relationship [
+    ref: - Contacts.Name,
+    note: 'Who referred this person to us?']
+  Referrals relationship [
+    ref: < Contacts.Name, 
+    note: 'Who did this person refer to us?']
+  Exhibitions relationship [
+    ref: < Exhibitions.Name, 
+    note: 'Exhibitions & Shows related to this person.']
+
+  // ===== CreatedOn and Modified =====
+  CreatedOn created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  ModifiedOn last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
+}
+
+// ------------------ Organizations
+Table Organizations {
+  Name text [pk]
+  ServiceIndustry multi_select
+  Website url
+  Instagram url
+  Email email [
+    note: 'May be necessary for additional email fields.']
+  Phone phone [
+    note: 'May be necessary for additional phone fields.']
+  Street text
+  City text
+  State text
+  Zip text
+  Country select 
+
+  // ===== CRM & Relationships =====
+  Artworks relationship [
+    ref: < Artworks.Title, 
+    note: 'Artworks related to this Org.']
+  Staff relationship [
+    ref: < Contacts.Name, 
+    note: 'People related to this Org.']
+  Tags relationship [
+    ref: < Tags.Tag]
+  Tasks relationship [
+    ref: < Tasks.Task, 
+    note: 'Optional Tasks associated with this Org.']
+  Deals relationship [
+    ref: < Deals.Deal, 
+    note: 'Deals this Org is related to.']
+  Exhibitions relationship [
+    ref: < Exhibitions.Name, 
+    note: 'Exhibitions & Shows related to this Org.']
+
+
+
+  
+  // ===== CreatedOn and Modified =====
+  CreatedOn created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  ModifiedOn last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
+
+  Note: 'Galleries, Museums, Non-profits, and all Businesses wanting to be tracked and connected.'
+}
+
+// ------------------ Exhibitions
+Table Exhibitions {
+  Name text [pk]
+  Artist person [
+    note: 'select from Members and Guests']
+  Website url
+  Hashtags multi_select
+  ShowDateRange date [note: 'Range. Include Start and End dates']
+  SubmissionDue date
+
+  // ===== Relationships =====
+  Artworks relationship [
+    ref: < Artworks.Title, 
+    note: 'Artworks related to this Exhibition.']
+  Contact relationship [
+    ref: < Contacts.Name, 
+    note: 'People related to this Exhibition.']
+  Tags relationship [
+    ref: < Tags.Tag]
+  Tasks relationship [
+    ref: < Tasks.Task, 
+    note: 'Optional Tasks associated with this Exhibition.']
+  Organizations relationship [
+    ref: < Organizations.Name, 
+    note: 'Where is this Exhibition?']
+  
+  // ===== CreatedOn and Modified =====
+  CreatedOn created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  ModifiedOn last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
+}
+
+// ------------------ Deals
+Table Deals {
+  Deal text [pk]
+  AssignedTo person [
+    note: 'select from Members and Guests']
+  Stage multi_select
+  Type multi_select
+  Discount number [
+    note: 'Enter integer. Format as %']
+  Tax number [
+    note: 'Enter integer. Format as %. Leave empty if not needed.']
+  CloseDate date
+  WonLostReason text
+
+  // ===== CRM & Relationships =====
+  Artworks relationship [
+    ref: < Artworks.Title, 
+    note: 'Artworks related to this Deal.']
+  ArtworksTotal rollup [
+    note: 'SUM Rollup of Artworks relationship']
+  Contact relationship [
+    ref: < Contacts.Name, 
+    note: 'People related to this Deal.']
+  Tags relationship [
+    ref: < Tags.Tag]
+  Tasks relationship [
+    ref: < Tasks.Task, 
+    note: 'Optional Tasks associated with this Deal.']
+  Organizations relationship [
+    ref: < Organizations.Name, 
+    note: 'Org(s) related to this Deal.']
+
+  // ===== Formulas =====
+  DealWDiscount formula [
+    note: 'prop("ArtworksTotal") - prop("ArtworksTotal") * prop("Discount")']
+  DealTotal formula [
+    note: 'Includes tax : prop("DealWDiscount") + prop("DealWDiscount") * prop("Tax")']
+  
+  // ===== CreatedOn and Modified =====
+  CreatedOn created_time [default: 'now()']
+  CreatedBy created_by [default: 'current user']
+  ModifiedOn last_edited_time [default: 'now()']
+  ModifiedBy last_edited_by [default: 'current user']
+}
+
